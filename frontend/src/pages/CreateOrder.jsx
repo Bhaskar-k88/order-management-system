@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { createOrder } from "../services/api";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Swal from "sweetalert2"; // ✅ import SweetAlert2
 
 const CreateOrder = () => {
   const [productName, setProductName] = useState("");
@@ -13,13 +14,22 @@ const CreateOrder = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ Validation with SweetAlert2
     if (!productName || !quantity) {
-      alert("All fields are required");
+      Swal.fire({
+        icon: "error",
+        title: "Missing Fields",
+        text: "All fields are required!",
+      });
       return;
     }
 
     if (Number(quantity) <= 0) {
-      alert("Quantity must be greater than 0");
+      Swal.fire({
+        icon: "warning",
+        title: "Invalid Quantity",
+        text: "Quantity must be greater than 0",
+      });
       return;
     }
 
@@ -31,12 +41,22 @@ const CreateOrder = () => {
         quantity: Number(quantity),
       });
 
-      alert("Order created successfully ✅");
+      // ✅ Success message
+      Swal.fire({
+        icon: "success",
+        title: "Order Created",
+        text: `Order "${productName}" created successfully! ✅`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
 
       navigate("/dashboard");
     } catch (error) {
-      console.log(error.response?.data?.message);
-      alert(error.response?.data?.message || "Error creating order");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Error creating order",
+      });
     } finally {
       setLoading(false);
     }

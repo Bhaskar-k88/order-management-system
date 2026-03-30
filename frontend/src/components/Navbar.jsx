@@ -4,10 +4,12 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+  const token = localStorage.getItem("token");
+  if (token) {
     localStorage.removeItem("token");
-    navigate("/login");
-  };
-
+    navigate("/login", { replace: true }); // 🔹 replace avoids history stacking
+  }
+};
   return (
     <nav className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
       {/* Logo / Title */}

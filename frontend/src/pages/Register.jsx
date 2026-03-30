@@ -2,11 +2,13 @@ import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../services/api";
+import Swal from "sweetalert2";
 
 const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
@@ -14,20 +16,40 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ Validation
     if (!name || !email || !password) {
-      alert("All fields are required");
-      return;
+      return Swal.fire({
+        icon: "warning",
+        title: "Missing Fields",
+        text: "Please fill in all fields!",
+      });
     }
 
     try {
+      setLoading(true);
+
       const res = await registerUser({ name, email, password });
 
+      // Save token & login
       login(res.data, res.data.token);
+
+      Swal.fire({
+        icon: "success",
+        title: "Account Created ✅",
+        text: "Redirecting to dashboard...",
+        showConfirmButton: false,
+        timer: 1500,
+      });
 
       navigate("/dashboard");
     } catch (error) {
-      console.log(error.response?.data?.message);
-      alert(error.response?.data?.message || "Registration failed");
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed ❌",
+        text: error.response?.data?.message || "Something went wrong",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -39,7 +61,6 @@ const Register = () => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
           <input
             type="text"
             placeholder="Enter your name"
@@ -48,7 +69,6 @@ const Register = () => {
             className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
 
-          {/* Email */}
           <input
             type="email"
             placeholder="Enter your email"
@@ -57,7 +77,6 @@ const Register = () => {
             className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
 
-          {/* Password */}
           <input
             type="password"
             placeholder="Enter your password"
@@ -66,16 +85,15 @@ const Register = () => {
             className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
 
-          {/* Button */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
-        {/* Login Link */}
         <p className="text-center text-sm mt-4">
           Already have an account?{" "}
           <span

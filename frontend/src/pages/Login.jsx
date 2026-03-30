@@ -2,10 +2,12 @@ import React, { useState, useContext } from "react";
 import { loginUser } from "../services/api";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -14,19 +16,35 @@ const Login = () => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("All fields are required");
+      Swal.fire({
+        icon: "warning",
+        title: "All fields are required",
+      });
       return;
     }
 
     try {
+      setLoading(true);
       const res = await loginUser({ email, password });
 
       login(res.data, res.data.token);
 
+      Swal.fire({
+        icon: "success",
+        title: "Login Successful ✅",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
       navigate("/dashboard");
     } catch (error) {
       console.log(error.response?.data?.message);
-      alert(error.response?.data?.message || "Login failed");
+      Swal.fire({
+        icon: "error",
+        title: error.response?.data?.message || "Login failed",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,9 +77,10 @@ const Login = () => {
           {/* Button */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
