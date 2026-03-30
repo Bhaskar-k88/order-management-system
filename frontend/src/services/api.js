@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5001/api",
+  baseURL: "https://order-management-system-a1o4.onrender.com",
 });
 
 // 🔥 ADD THIS (MOST IMPORTANT)
