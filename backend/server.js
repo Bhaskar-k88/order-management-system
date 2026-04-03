@@ -13,7 +13,7 @@ const app = express()
 app.use(express.json())   
 
 app.use(cors({
-  origin: "https://sunny-fudge-562774.netlify.app", // your Netlify URL
+  origin: "https://order-tracker-562774.netlify.app/", // your Netlify URL
   credentials: true
 }));
 
