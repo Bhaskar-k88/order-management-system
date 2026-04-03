@@ -13,7 +13,10 @@ const app = express()
 app.use(express.json())   
 
 app.use(cors({
-  origin: "https://order-tracker-562774.netlify.app/", // your Netlify URL
+  origin: [
+    "http://localhost:5173", // for local testing
+    "https://sunny-fudge-562774.netlify.app" // for deployed frontend
+  ],
   credentials: true
 }));
 
